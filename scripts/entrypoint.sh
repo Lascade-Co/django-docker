@@ -3,6 +3,10 @@ set -euo pipefail
 
 # If first arg is "run", choose dev/prod command automatically; otherwise exec args
 if [[ "${1:-run}" == "run" ]]; then
+  if [[ "${COLLECTSTATIC}" == "true" ]]; then
+      python manage.py collectstatic --noinput
+  fi
+
   # Optional: wait for DB
   if [[ "${WAIT_FOR_DB}" == "true" ]]; then
     /usr/local/bin/wait-for-db
@@ -11,9 +15,6 @@ if [[ "${1:-run}" == "run" ]]; then
   # Optional: Django admin steps (safe defaults are OFF)
   if [[ "${RUN_MIGRATIONS}" == "true" ]]; then
     python manage.py migrate --noinput
-  fi
-  if [[ "${COLLECTSTATIC}" == "true" ]]; then
-    python manage.py collectstatic --noinput
   fi
 
   if [[ "${DEBUG:-false}" == "true" ]]; then
