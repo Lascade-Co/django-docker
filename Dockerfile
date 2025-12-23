@@ -23,13 +23,18 @@ RUN chmod +x /usr/local/bin/wait-for-db /usr/local/bin/entrypoint
 
 # Non-root user
 RUN adduser -S -u 10001 django
-USER django
 
+# Create workdir with proper ownership before switching user
 WORKDIR /usr/src/app
+RUN mkdir -p /usr/src/app/staticfiles && \
+    chown -R django /usr/src/app/staticfiles
+
+USER django
 ENV PATH="$PATH:/home/django/.local/bin"
 
 # Keep this minimal: only deps ALL services share
 COPY requirements.txt base-requirements.txt
+
 # Many libs now publish musllinux wheels; prefer binaries to avoid compiles
 RUN pip install --upgrade pip
 RUN pip install --prefer-binary -r base-requirements.txt
