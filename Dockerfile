@@ -26,14 +26,14 @@ RUN adduser -S -u 10001 django
 
 # Create workdir with proper ownership before switching user
 WORKDIR /usr/src/app
-RUN chown -R django:django /usr/src/app && \
-    chmod -R 755 /usr/src/app
+RUN mkdir -p /usr/src/app/staticfiles && \
+    chown -R django /usr/src/app/staticfiles
 
 USER django
 ENV PATH="$PATH:/home/django/.local/bin"
 
 # Keep this minimal: only deps ALL services share
-COPY --chown=django:django requirements.txt base-requirements.txt
+COPY requirements.txt base-requirements.txt
 
 # Many libs now publish musllinux wheels; prefer binaries to avoid compiles
 RUN pip install --upgrade pip
