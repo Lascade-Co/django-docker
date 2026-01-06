@@ -32,8 +32,8 @@ if [[ "${1:-run}" == "run" ]]; then
 
       # Default gunicorn logging options (safe, correctly quoted)
       DEFAULT_GUNICORN_OPTS=(
-        --access-logfile gunicorn_access.log
-        --error-logfile -
+        --access-logfile /var/gunicorn/access.log
+        --error-logfile /var/gunicorn/error.log
         --access-logformat '%(t)s pid=%(p)s %(h)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(L)s'
       )
 

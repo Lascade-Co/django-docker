@@ -23,6 +23,10 @@ RUN chmod +x /usr/local/bin/wait-for-db /usr/local/bin/entrypoint
 
 # Non-root user
 RUN adduser -S -u 10001 django
+
+RUN mkdir -p /var/gunicorn
+RUN chown -R django /var/gunicorn
+
 USER django
 
 WORKDIR /usr/src/app
