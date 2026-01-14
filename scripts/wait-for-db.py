@@ -20,13 +20,9 @@ Exit codes:
 """
 
 import os, sys, time, signal
+import traceback
 from contextlib import closing
-
-try:
-    import psycopg
-except Exception as e:
-    print(f"[wait-for-db] ERROR: psycopg not available: {e}", file=sys.stderr)
-    sys.exit(1)
+import psycopg
 
 _SHOULD_STOP = False
 def _handle_term(signum, frame):
@@ -74,7 +70,7 @@ def main() -> int:
 
     timeout_total = int(os.environ.get("WAIT_TIMEOUT", "60"))
     interval = float(os.environ.get("WAIT_INTERVAL", "1"))
-    per_try = float(os.environ.get("PGCONNECT_TIMEOUT", "2"))
+    per_try = int(os.environ.get("PGCONNECT_TIMEOUT", "2"))
     backoff = getenv_bool("WAIT_BACKOFF", False)
 
     print(f"[wait-for-db] Waiting for PostgreSQL (timeout={timeout_total}s, interval={interval}s, per_try={per_try}s, backoff={backoff})")
@@ -101,13 +97,15 @@ def main() -> int:
             # Connected and query success.
             print(f"[wait-for-db] PostgreSQL is available after {tries} attempt(s), {elapsed:.2f}s.")
             return 0
-        except Exception as e:
-            # Common during startup; keep logs concise.
-            print(f"[wait-for-db] Not ready (try {tries}): {e.__class__.__name__}", flush=True)
-            # Sleep before next attempt
+        except (psycopg.OperationalError, TimeoutError, OSError) as e:
+            print(f"[wait-for-db] Not ready (try {tries}): {type(e).__name__}: {e}", flush=True)
             time.sleep(current_interval)
             if backoff:
                 current_interval = min(5.0, current_interval * 1.5)
+        except Exception as e:
+            print(f"[wait-for-db] Unexpected error (try {tries}): {type(e).__name__}: {e}", flush=True)
+            traceback.print_exc()
+            return 2
 
 if __name__ == "__main__":
     sys.exit(main())
