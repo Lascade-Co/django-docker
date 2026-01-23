@@ -16,7 +16,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     GUNICORN_OPTS=""
 
 # Runtime libs only (keep this lean)
-RUN apk add --no-cache bash ca-certificates tzdata postgresql-libs curl
+RUN apk add --no-cache bash ca-certificates tzdata postgresql-libs curl gdal geos
 
 # Common scripts (bash entrypoint + Python DB wait)
 COPY scripts/wait-for-db.py /usr/local/bin/wait-for-db
