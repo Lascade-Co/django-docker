@@ -2,7 +2,9 @@
 set -euo pipefail
 
 if [[ $1 == "celery" ]]; then
-  pgrep -f 'celery.*worker' && pgrep -f 'celery.*beat' && celery -A core inspect ping -t 10 || exit 1
+  pgrep -f 'celery.*worker'
+  pgrep -f 'celery.*beat'
+  celery -A core status
 elif [ $1 == "server" ]; then
   curl -sSf http://localhost:$PORT/healthcheck/ || exit 1
 else
