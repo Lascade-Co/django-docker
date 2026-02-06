@@ -10,6 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     WAIT_FOR_DB=true \
     RUN_MIGRATIONS=false \
     COLLECTSTATIC=false \
+    GUNICORN_LOGS_FOLDER=/var/log/gunicorn/ \
     MEDIA_ROOT=/var/www/django/media \
     STATIC_ROOT=/var/www/django/static
 
