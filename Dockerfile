@@ -10,10 +10,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     WAIT_FOR_DB=true \
     RUN_MIGRATIONS=false \
     COLLECTSTATIC=false \
-    GUNICORN_LOGS_FOLDER=/var/gunicorn \
     MEDIA_ROOT=/var/www/django/media \
-    STATIC_ROOT=/var/www/django/static \
-    GUNICORN_OPTS=""
+    STATIC_ROOT=/var/www/django/static
 
 # Runtime libs only (keep this lean)
 RUN apk add --no-cache bash ca-certificates tzdata postgresql-libs curl postgresql-client postgis gdal
