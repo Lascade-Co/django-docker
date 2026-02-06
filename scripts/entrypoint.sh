@@ -32,7 +32,11 @@ if [[ "${1:-run}" == "run" ]]; then
     exec gunicorn "${WSGI_MODULE}" -b "0.0.0.0:${PORT}" --config "${GUNICORN_CONFIG_FILE}"
   fi
 elif [[ "${1:-}" == "celery" ]]; then
-  exec celery -A core worker --pool=gevent -c 100 --autoscale=200,20 -l INFO & celery -A core beat -l info
+  if [[ "$2" == "beat"]]; then
+    exec celery -A core beat -l info
+  elif [[ "$2" == "worker" ]]; then
+    exec celery -A core worker --pool=gevent -c 100 --autoscale=200,20 -l INFO
+  fi
 else
   exec "$@"
 fi
