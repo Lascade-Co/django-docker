@@ -22,14 +22,15 @@ if [[ "${1:-run}" == "run" ]]; then
     python manage.py migrate --noinput
   fi
 
-  if [[ "${DEBUG:-false}" == "true" ]]; then
-    exec python manage.py runserver 0.0.0.0:${PORT}
+  if [[ "${DISABLE_GUNICORN:-false}" == "true" ]]; then
+    exec python manage.py runserver "0.0.0.0:${PORT}"
   else
-    if [[ ! -f "${GUNICORN_CONFIG_FILE}" ]]; then
-      echo "Gunicorn config file not found at ${GUNICORN_CONFIG_FILE}"
+    gunicorn_config_file="${GUNICORN_CONFIG_FILE:-}"
+    if [[ -z "$gunicorn_config_file" || ! -f "$gunicorn_config_file" ]]; then
+      echo "Gunicorn config file not found at '${gunicorn_config_file}'" >&2
       exit 1
     fi
-    exec gunicorn "${WSGI_MODULE}" -b "0.0.0.0:${PORT}" --config "${GUNICORN_CONFIG_FILE}"
+    exec gunicorn "${WSGI_MODULE}" -b "0.0.0.0:${PORT}" --config "$gunicorn_config_file"
   fi
 elif [[ "${1:-}" == "celery" ]]; then
   if [[ "$2" == "beat" ]]; then
