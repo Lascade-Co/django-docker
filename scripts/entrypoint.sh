@@ -36,7 +36,7 @@ elif [[ "${1:-}" == "celery" ]]; then
   if [[ "$2" == "beat" ]]; then
     exec celery -A core beat -l info
   elif [[ "$2" == "worker" ]]; then
-    exec celery -A core worker --pool=gevent -c 20 --autoscale=50,10 -l INFO
+    exec celery -A core worker --pool=gevent -c "${CELERY_CONCURRENCY:-20}" -l INFO
   fi
 else
   exec "$@"
